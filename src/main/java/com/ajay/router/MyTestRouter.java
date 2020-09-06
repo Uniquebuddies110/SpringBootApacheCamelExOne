@@ -1,5 +1,8 @@
 package com.ajay.router;
 
+import org.apache.camel.Exchange;
+import org.apache.camel.Message;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +34,24 @@ public class MyTestRouter extends RouteBuilder {
 		 * from("{{my.loc.source}}") .to("{{my.loc.dest}}");
 		 */
 
-		System.out.println("MyTestRouter.configure()-- ends");
+		// For Apache Camel Processor
+		from("{{my.loc.source}}").process(new Processor() {
+
+			@Override
+			public void process(Exchange exchange) throws Exception {
+				// 1. By using Exchange input Data
+				Message inMsg = exchange.getIn();
+				// 2. Read body(data) from Message obj
+				String body = inMsg.getBody(String.class);
+				// 3. conversion/logics (Processing code)
+				body = "Newly Modified Data " + body;
+				// 4. using Exchange obj set Message to Output
+				// Message outMsg = exchange.getOut();
+				Message outMsg = exchange.getMessage();
+				// 5. Set body to Out Message.
+				outMsg.setBody(body);
+			}
+		}).to("{{my.loc.dest}}");
+
 	}
 }
