@@ -35,23 +35,41 @@ public class MyTestRouter extends RouteBuilder {
 		 */
 
 		// For Apache Camel Processor
-		from("{{my.loc.source}}").process(new Processor() {
+//		from("{{my.loc.source}}").process(new Processor() {
+//			@Override
+//			public void process(Exchange exchange) throws Exception {
+//				// 1. By using Exchange input Data
+//				Message inMsg = exchange.getIn();
+//				// 2. Read body(data) from Message obj
+//				String body = inMsg.getBody(String.class);
+//				// 3. conversion/logics (Processing code)
+//				body = "Newly Modified Data " + body;
+//				// 4. using Exchange obj set Message to Output
+//				// Message outMsg = exchange.getOut();
+//				Message outMsg = exchange.getMessage();
+//				// 5. Set body to Out Message.
+//				outMsg.setBody(body);
+//			}
+//		}).to("{{my.loc.dest}}");
 
-			@Override
-			public void process(Exchange exchange) throws Exception {
-				// 1. By using Exchange input Data
-				Message inMsg = exchange.getIn();
-				// 2. Read body(data) from Message obj
-				String body = inMsg.getBody(String.class);
-				// 3. conversion/logics (Processing code)
-				body = "Newly Modified Data " + body;
-				// 4. using Exchange obj set Message to Output
-				// Message outMsg = exchange.getOut();
-				Message outMsg = exchange.getMessage();
-				// 5. Set body to Out Message.
-				outMsg.setBody(body);
+		/* Lambda Expression    ---  Processor(I) is Functional Interface which is having only one abstract method.*/
+		from("{{my.loc.source}}")
+		.process(
+				exchange -> {
+			// 1. By using Exchange input Data
+			Message inMsg = exchange.getIn();
+			// 2. Read body(data) from Message obj
+			String body = inMsg.getBody(String.class);
+			// 3. conversion/logics (Processing code)
+			body = "Newly Modified Data " + body;
+			// 4. using Exchange obj set Message to Output
+			// Message outMsg = exchange.getOut();
+			Message outMsg = exchange.getMessage();
+			// 5. Set body to Out Message.
+			outMsg.setBody(body);
 			}
-		}).to("{{my.loc.dest}}");
+		)
+		.to("{{my.loc.dest}}");
 
 	}
 }
